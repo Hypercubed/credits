@@ -7,8 +7,8 @@ import getCredits from '../lib/analyzers/bower';
 
 const fixtures = path.resolve( './fixtures' );
 
-test( 'getCredits - get available bower credits', t => {
-  const credits = getCredits( fixtures );
+test( 'getCredits - get available bower credits', async t => {
+  const credits = await getCredits( fixtures );
 
   t.deepEqual( credits[ 0 ].name, 'Alice Bobson' );
   t.deepEqual( credits[ 0 ].email, 'alicebobson@alison.io' );

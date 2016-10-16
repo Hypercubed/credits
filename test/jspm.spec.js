@@ -7,8 +7,8 @@ import getCredits from '../lib/analyzers/jspm';
 
 const fixtures = path.resolve( './fixtures' );
 
-test( 'getCredits - get available jspm credits', t => {
-  const credits = getCredits( fixtures );
+test( 'getCredits - get available jspm credits', async t => {
+  const credits = await getCredits( fixtures );
 
   t.deepEqual( credits[ 0 ].name, 'Alice Bobson' );
   t.deepEqual( credits[ 0 ].packages.sort(), [ 'bar', 'baz' ] );

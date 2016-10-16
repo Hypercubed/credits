@@ -7,11 +7,11 @@ import getCredits from '../lib/analyzers/npm';
 
 const fixtures = path.resolve( './fixtures' );
 
-test( 'getCredits - get available npm credits', t => {
+test( 'getCredits - get available npm credits', async t => {
   fs.ensureSymlinkSync( `${fixtures}/linked`, `${fixtures}/node_modules/linked` );
   fs.ensureSymlinkSync( `${fixtures}/node_modules/cycle`, `${fixtures}/node_modules/cycle/node_modules/cycle` );
 
-  const credits = getCredits( fixtures );
+  const credits = await getCredits( fixtures );
 
   t.deepEqual( credits[ 0 ].name, 'Alice Bobson' );
   t.deepEqual( credits[ 0 ].packages.sort(), [ 'bar', 'baz', 'boom' ] );

@@ -21,37 +21,26 @@ var Promise       = require( 'es6-promise' ).Promise;
  */
 function readDirectory( projectPath, analyzers ) {
   var credits = {};
+  var keys = Object.keys( analyzers );
 
-  for ( var analyzer in analyzers ) {
-    credits[ analyzer ] = analyzers[ analyzer ]( projectPath );
-  };
+  const promises = keys.map( analyzer => analyzers[ analyzer ]( projectPath ) );
 
-  return credits;
+  return Promise.all(promises)
+    .then(res => {
+      res.forEach((res, i) => {
+        credits[ keys[i] ] = res.sort( function( a, b ) {
+          return b.packages.length - a.packages.length;
+        } );
+      });
+      return credits;
+    });
 }
 
 module.exports = function( projectPath ) {
   var analyzers = analyzersUtil.getAnalyzers( config );
 
-  return new Promise(
-    function( resolve, reject ) {
-      if ( fs.existsSync( projectPath ) ) {
-        try {
-          var credits = readDirectory( projectPath, analyzers );
-        } catch( e ) {
-          /* istanbul ignore next */
-          return reject( e );
-        }
-
-        for ( var analyzer in analyzers ) {
-          credits[ analyzer ] = credits[ analyzer ].sort( function( a, b ) {
-            return b.packages.length - a.packages.length;
-          } );
-        };
-
-        resolve( credits );
-      } else {
-        reject( new Error( projectPath + ' does not exist' ) );
-      }
-    }
-  );
+  if ( fs.existsSync( projectPath ) ) {
+    return readDirectory( projectPath, analyzers );
+  }
+  return Promise.reject(new Error( projectPath + ' does not exist' ));
 };
